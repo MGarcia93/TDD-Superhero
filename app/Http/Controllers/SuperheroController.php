@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Superhero;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class SuperheroController extends Controller
 {
@@ -27,8 +25,8 @@ class SuperheroController extends Controller
      */
     public function store(Request $request)
     {
-        Validator::make($request->all(), [
-            'name' => 'required|unique:superhero',
+        $request->validate([
+            'name' => 'required|unique:superheroes',
             'history' => 'required',
             'creator' => 'required',
             'superpowers' => 'required'
