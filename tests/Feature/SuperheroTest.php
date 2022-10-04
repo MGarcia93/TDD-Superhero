@@ -38,38 +38,26 @@ class SuperheroTest extends TestCase
         $data = [
             'name' => $this->faker->sentence,
             'history' => $this->faker->paragraph,
-            'creator' => $this->faker->randomElements(array_column(Creator::cases(), 'value')),
-            'SuperPower' => array_map(function ($power) {
+            'creator' => $this->faker->randomElements(array_column(Creator::cases(), 'value'))[0],
+            'superpowers' => array_map(function ($power) {
                 return $power['id'];
             }, $superpowers->toArray())
         ];
 
         $response = $this->json('POST', '/api/superhero', $data);
 
-        $response->assertStatus(201)
-            ->assertJson(compact('data'));
-        $this->assertDatabaseHas('superheros', [
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('superheroes', [
             'name' => $data['name'],
             'history' => $data['history'],
             'creator' => $data['creator']
         ]);
-        $hero = Superhero::where('name', $data['name'])->where('history', $data['history'])->get();
+        $hero = Superhero::where('name', $data['name'])->where('history', $data['history'])->get()->first();
         array_map(function ($power) use ($hero) {
             $this->assertDatabaseHas('superpowers_superheroes', [
                 'superpower_id' => $power['id'],
                 'superhero_id' => $hero->id
             ]);
         }, $superpowers->toArray());
-    }
-
-
-    /**
-     * Rolls back migrations
-     */
-    public function tearDown(): void
-    {
-        Artisan::call('migrate:rollback');
-
-        parent::tearDown();
     }
 }
