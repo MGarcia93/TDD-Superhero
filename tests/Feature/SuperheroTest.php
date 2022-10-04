@@ -60,4 +60,15 @@ class SuperheroTest extends TestCase
             ]);
         }, $superpowers->toArray());
     }
+
+    /** @test */
+    public function ErrorInCreateASuperheroForWithoutField()
+    {
+        $data = [
+            'name' => $this->faker->sentence,
+            'creator' => $this->faker->randomElements(array_column(Creator::cases(), 'value'))[0]
+        ];
+        $response = $this->json('POST', '/api/superhero', $data);
+        $response->assertStatus(422);
+    }
 }
